@@ -22,6 +22,7 @@
 #define LOG_MAX_LINE 2048 ///每行日志的最大长度
 #define LOG_DEBUG_INFO_BUF_LENGTH 100 ///调试信息的缓冲区长度
 #define LOG_PATH_SPLIT "/" ///路径中的目录分隔符
+#define LOG_BUFFER_MAX 2048000 ///printf时的最大长度
 
 static FILE *log_file_output;///输出log的文件
 static char log_file_name[PATH_MAX];///输出日志的文件名
@@ -32,10 +33,12 @@ static long long log_file_current_size=0;///现在的文件的长度
 void printfln(const char *fmt,...){
 	va_list ap;
 	va_start(ap,fmt);
-	char buf[LOG_MAX_LINE]={'\0'};
-	vsnprintf(buf,LOG_MAX_LINE-1,fmt,ap);
+	static char buf[LOG_BUFFER_MAX]={'\0'};
+	memset(buf,0,LOG_BUFFER_MAX);
+	vsnprintf(buf,LOG_BUFFER_MAX-1,fmt,ap);
 	va_end(ap);
 	printf("%s\n",buf);
+	fflush(NULL);
 }
 ///当前时间
 static char *_debug_time(){

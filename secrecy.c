@@ -269,7 +269,8 @@ int secrecy_encrypt_file(const char *input_filename,
 	char output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 
 	char *input=file_read(input_filename);
-
+	printfln("Input:\n%s\n",input);
+	
 	///encrypt block	
 	unsigned char encrypt[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	size_t encrypt_length=secrecy_aes(AES_ENCRYPT,
@@ -303,11 +304,15 @@ int secrecy_encrypt_file(const char *input_filename,
 		_secrecy_make_block("HINTS",
 				hints,output_block_hints);
 		strcat(output,output_block_hints);
+		//printfln("output_block_hints:\n:%s",output_block_hints);
 	}
 	///write file
 	file_write(output_filename,output);
+	
+	//printfln("OUTPUT");
+	//print_char_code((unsigned char *)output,strlen(output));
 
-	printfln("%s\n",output);
+	printfln("Output:\n%s\n",output);
 	return 0;
 }
 /// 解密一个文件
@@ -324,8 +329,14 @@ int secrecy_decrypt_file(const char *input_filename,
 	char output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 
 	char *input=file_read(input_filename);
-	printfln("input:\n%s",input);
+	printfln("Input:\n%s\n",input);
 
+	///hints
+	char codes_hints[SECRECY_SHA1_BASE64_LENGTH]={'\0'};
+	_secrecy_get_block_content(input,"HINTS",codes_hints);
+	if (strlen(codes_hints)>0){
+		printfln("Hints:\n%s",codes_hints);
+	}
 	///encrypt
 	char codes_encrypt[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	_secrecy_get_block_content(input,"AES-CBC-256",codes_encrypt);
@@ -346,17 +357,17 @@ int secrecy_decrypt_file(const char *input_filename,
 		_secrecy_get_block_content(input,"SHA",sha1_from_input);	
 		unsigned char *sha1_check=sha1_str_to_base64(output);
 		if (strcmp(sha1_from_input,(char *)sha1_check)==0){
-			printfln("check sha1 succeed");
+			printfln("Check SHA1 Succeed");
 		}
 		else{
-			printfln("check sha failed:%s,%s",sha1_from_input,
+			printfln("Check SHA1 Failed:%s,%s",sha1_from_input,
 					sha1_check);
 			return -1;
 		}
 	}
 
 	file_write(output_filename,output);
-	printfln("output:\n%s",output);
+	printfln("Output:\n%s\n",output);
 	return 0;
 }
 ///test
