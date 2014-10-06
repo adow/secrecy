@@ -26,18 +26,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include "log.h"
-
-extern int secrecy_encrypt_file(const char *input_filename,
-		const char *output_filename,
-		const unsigned char *key,
-		const char *hints
-		);
-extern int secrecy_decrypt_file(const char *input_filename,
-		const char *output_filename,
-		const unsigned char *key,
-		int check_sha
-		);
-extern void secrecy_self_test();
+#include "secrecy.h"
 
 ///输出帮助信息
 void _output_help(){
