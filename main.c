@@ -60,7 +60,7 @@ int _execute_cmd(int arg_c,char *arg_v[]){
 		return -1;	
 	}
 	char *cmd=arg_v[1];
-	printfln("* cmd:%s",cmd);
+	cc_log("cmd:%s",cmd);
 	///第一个参数是encrypt/decrpt,所以处理的参数列表要往后面移
 	arg_v+=1;
 	arg_c-=1;
@@ -109,10 +109,10 @@ int _execute_cmd(int arg_c,char *arg_v[]){
 		if (!strlen(output_filename)){
 			strcpy(output_filename,input_filename);	
 		}
-		printfln("* key:%s",key);
-		printfln("* input_filename:%s",input_filename);
-		printfln("* output_filename:%s",output_filename);
-		printfln("* hints:%s",hints);
+		cc_log("key:%s",key);
+		cc_log("input_filename:%s",input_filename);
+		cc_log("output_filename:%s",output_filename);
+		cc_log("hints:%s",hints);
 		printfln("");
 		if (!strcmp(cmd,"encrypt")){
 			if (secrecy_encrypt_file(input_filename,output_filename,key,hints)){

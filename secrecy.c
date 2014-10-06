@@ -335,7 +335,7 @@ int secrecy_decrypt_file(const char *input_filename,
 	char codes_hints[SECRECY_SHA1_BASE64_LENGTH]={'\0'};
 	_secrecy_get_block_content(input,"HINTS",codes_hints);
 	if (strlen(codes_hints)>0){
-		printfln("Hints:\n%s",codes_hints);
+		printfln("Hints:%s",codes_hints);
 	}
 	///encrypt
 	char codes_encrypt[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
