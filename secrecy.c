@@ -258,10 +258,12 @@ size_t secrecy_aes(int mode,
 // input_filename: 要加密的文件
 // output_filename: 加密后保存的文件
 // key: 密钥
+// hints: 提示
 // 返回 0 成功，其他出错
 int secrecy_encrypt_file(const char *input_filename,
 		const char *output_filename,
-		const unsigned char *key
+		const unsigned char *key,
+		const char *hints
 		){
 	char output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 
@@ -294,6 +296,13 @@ int secrecy_encrypt_file(const char *input_filename,
 			(char *)output_block_hash);
 	strcat(output,(char *)output_block_hash);
 
+	///hints block
+	if (hints && strlen(hints) > 0){
+		char output_block_hints[SECRECY_SHA1_BASE64_LENGTH]={'\0'};
+		_secrecy_make_block("HINTS",
+				hints,output_block_hints);
+		strcat(output,output_block_hints);
+	}
 	///write file
 	file_write(output_filename,output);
 
@@ -439,7 +448,7 @@ void testcodes_to_string(){
 }
 void test_encrypt_file(){
 	unsigned char key[]=SECRECY_TEST_SECRET_KEY;
-	secrecy_encrypt_file(SECRECY_TEST_FILE,SECRECY_TEST_FILE,key);
+	secrecy_encrypt_file(SECRECY_TEST_FILE,SECRECY_TEST_FILE,key,"secrecy test secret key");
 	//secrecy_encrypt_file("./cppp3.md","./cppp3.secrecy.md",key);
 }
 void test_decrypt_file(){

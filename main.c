@@ -28,7 +28,8 @@
 
 extern int secrecy_encrypt_file(const char *input_filename,
 		const char *output_filename,
-		const unsigned char *key
+		const unsigned char *key,
+		const char *hints
 		);
 extern int secrecy_decrypt_file(const char *input_filename,
 		const char *output_filename,
@@ -112,7 +113,7 @@ int _execute_cmd(int arg_c,char *arg_v[]){
 		printf("output_filename:%s\n",output_filename);
 		printf("hints:%s\n",hints);
 		if (!strcmp(cmd,"encrypt")){
-			if (secrecy_encrypt_file(input_filename,output_filename,key)){
+			if (secrecy_encrypt_file(input_filename,output_filename,key,hints)){
 				printf("encrypt error\n");
 				return -1;
 			}
