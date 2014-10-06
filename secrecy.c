@@ -5,7 +5,7 @@
  *  Created by adow on 2014-08-05 20:03:20 
  *  Copyright (C) 20014 adow, All rights reserved.
  *
- *  gcc ../lib/polarssl/base64.c ../lib/polarssl/aes.c ../lib/polarssl/sha1.c secrecy.c 
+ *  gcc lib/polarssl/base64.c lib/polarssl/aes.c lib/polarssl/sha1.c log.c secrecy.c 
  */
 
 #include <stdio.h>
@@ -22,6 +22,7 @@
 #include "lib/polarssl/config.h"
 #include "lib/polarssl/aes.h"
 #include "lib/polarssl/sha1.h"
+#include "log.h"
 
 #define SECRECY_AES_KEY_LENGTH 256 ///密钥长度
 #define SECRECY_BUFFER_LONG_LENGTH 1024000 ///临时缓冲区的最大长度
@@ -112,7 +113,7 @@ char *file_read(const char *filename){
 	memset(buffer,'\0',SECRECY_BUFFER_LONG_LENGTH);
 	FILE *file=fopen(filename,"r");
 	if (!file){
-		printf("file not found:%s\n",filename);
+		printfln("file not found:%s",filename);
 		return NULL;
 	}
 	char *p=buffer;
@@ -128,7 +129,7 @@ int file_write(const char *filename,
 		const char *str){
 	FILE *file=fopen(filename,"w");
 	if (!file){
-		printf("write file error:%s\n",filename);
+		printfln("write file error:%s",filename);
 		return -1;
 	}
 	char c;
@@ -164,9 +165,9 @@ size_t secrecy_aes(int mode,
 		const unsigned char *input,
 		size_t input_length,
 		unsigned char *output){
-	//printf("> secrecy_aes_256\n");
-	//printf("input:%s\n",input);
-	//printf("input_length:%ld\n",input_length);
+	//printfln("> secrecy_aes_256");
+	//printfln("input:%s",input);
+	//printfln("input_length:%ld",input_length);
 
 	aes_context aes_enc;
 	unsigned char iv[SECRECY_AES_BLOCK_LENGTH]={'\0'};
@@ -175,23 +176,23 @@ size_t secrecy_aes(int mode,
 	unsigned char key_full[SECRECY_AES_KEY_LENGTH+1]={'\0'};
 	memset((char *)key_full,'*',SECRECY_AES_KEY_LENGTH);
 	strncpy((char *)key_full,(char *)key,strlen((char *)key));
-	//printf("key_full:%ld:%s\n",strlen((char *)key_full),key_full);
+	//printfln("key_full:%ld:%s",strlen((char *)key_full),key_full);
 
 	///设置加密还是解密
 	if (mode==AES_ENCRYPT){
 		if(aes_setkey_enc(&aes_enc, key_full , SECRECY_AES_KEY_LENGTH)){
-			printf("aes_setkey_enc error\n");
+			printfln("aes_setkey_enc error");
 			return -1;
 		}
 	}
 	else if (mode==AES_DECRYPT){
 		if (aes_setkey_dec(&aes_enc,key_full,SECRECY_AES_KEY_LENGTH)){
-			printf("aes_setkey_enc error\n");
+			printfln("aes_setkey_enc error");
 			return -1;
 		}	
 	}
 	else{
-		printf("unknown mode\n");
+		printfln("unknown mode");
 		return -1;
 	}
 
@@ -203,9 +204,9 @@ size_t secrecy_aes(int mode,
 	while(p_input-input<input_length){
 		input_block[a++]=*p_input++;
 		if (a>=SECRECY_AES_BLOCK_LENGTH){
-			//printf("a:%d\n",a);
+			//printfln("a:%d",a);
 			/*
-			printf("input_block:%ld:%s\n",
+			printfln("input_block:%ld:%s",
 					strlen((char *)input_block),
 					input_block);
 			*/
@@ -215,11 +216,11 @@ size_t secrecy_aes(int mode,
 						iv,
 						input_block,
 						crypt_block)){
-				printf("aes error\n");
+				printfln("aes error");
 				break;
 			}
 			///print crypt_block
-			//printf("crypt_block:");
+			//printfln("crypt_block:");
 			//print_char_code(crypt_block,SECRECY_AES_BLOCK_LENGTH);
 			///	
 			memcpy(p_output,crypt_block,SECRECY_AES_BLOCK_LENGTH);///复制到现在的位置
@@ -231,26 +232,26 @@ size_t secrecy_aes(int mode,
 	}
 	///最后可能留下一个未满16字节的块，单独填充，用\0填充多余的字节
 	if (strlen((char *)input_block)){
-		//printf("last_input_block:%ld:%s\n",a,input_block);
+		//printfln("last_input_block:%ld:%s",a,input_block);
 		unsigned char crypt_block[100]={'\0'};
 		if (aes_crypt_cbc(&aes_enc,mode,
 					SECRECY_AES_BLOCK_LENGTH,
 					iv,
 					input_block,
 					crypt_block)){
-			printf("aes error\n");
+			printfln("aes error");
 			
 		}
 		///
-		//printf("last_crypt_block:");
+		//printfln("last_crypt_block:");
 		//print_char_code(crypt_block,SECRECY_AES_BLOCK_LENGTH);
 		///
 		memcpy(p_output,crypt_block,SECRECY_AES_BLOCK_LENGTH);
 		p_output+=SECRECY_AES_BLOCK_LENGTH;///移动到结尾
 	}
 	size_t output_length=p_output-output; ///输出内容的长度
-	//printf("output_length:%ld\n",output_length);
-	//printf("output:%s\n",output);
+	//printfln("output_length:%ld",output_length);
+	//printfln("output:%s",output);
 	//print_char_code(output,output_length);
 	return output_length;
 }
@@ -306,7 +307,7 @@ int secrecy_encrypt_file(const char *input_filename,
 	///write file
 	file_write(output_filename,output);
 
-	printf("%s\n",output);
+	printfln("%s\n",output);
 	return 0;
 }
 /// 解密一个文件
@@ -323,14 +324,14 @@ int secrecy_decrypt_file(const char *input_filename,
 	char output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 
 	char *input=file_read(input_filename);
-	printf("input:\n%s\n",input);
+	printfln("input:\n%s",input);
 
 	///encrypt
 	char codes_encrypt[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	_secrecy_get_block_content(input,"AES-CBC-256",codes_encrypt);
 	char encrypt[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	size_t encrypt_length=codes_to_string(codes_encrypt,encrypt);
-	//printf("encrypt:%ld,%s\n",encrypt_length,encrypt);
+	//printfln("encrypt:%ld,%s",encrypt_length,encrypt);
 
 	///aes	
 	size_t output_length=secrecy_aes(AES_DECRYPT,
@@ -345,17 +346,17 @@ int secrecy_decrypt_file(const char *input_filename,
 		_secrecy_get_block_content(input,"SHA",sha1_from_input);	
 		unsigned char *sha1_check=sha1_str_to_base64(output);
 		if (strcmp(sha1_from_input,(char *)sha1_check)==0){
-			printf("check sha1 succeed\n");
+			printfln("check sha1 succeed");
 		}
 		else{
-			printf("check sha failed:%s,%s\n",sha1_from_input,
+			printfln("check sha failed:%s,%s",sha1_from_input,
 					sha1_check);
 			return -1;
 		}
 	}
 
 	file_write(output_filename,output);
-	printf("output:\n%s\n",output);
+	printfln("output:\n%s",output);
 	return 0;
 }
 ///test
@@ -394,37 +395,37 @@ void test_secrecy_aes(){
 			input,
 			strlen((char *)input),
 			encrypt);
-	printf("encrypt:%ld:%s\n",encrypt_length,encrypt);
+	printfln("encrypt:%ld:%s",encrypt_length,encrypt);
 
 	char output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	string_to_codes(encrypt,encrypt_length,output);
-	printf("output:%s\n",output);
+	printfln("output:%s",output);
 	
 	unsigned char base64_output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	size_t base64_length=SECRECY_BUFFER_LONG_LENGTH;
 	base64_encode(base64_output,&base64_length,encrypt,encrypt_length);
-	printf("base64:%s\n",base64_output);
+	printfln("base64:%s",base64_output);
 
 	unsigned char block_output[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	_secrecy_make_block("AES-CBC-256",output,(char *)block_output);
-	printf("%s\n",block_output);
+	printfln("%s",block_output);
 
 	unsigned char hash_output[20]={'\0'};
 	sha1(input,strlen((char *)input),hash_output);
-	//printf("hash:%s\n",hash_output);
+	//printfln("hash:%s",hash_output);
 	unsigned char hash_base64[100]={'\0'};
 	size_t hash_base64_length=100;
 	base64_encode(hash_base64,&hash_base64_length,hash_output,20);
-	printf("hash_base64:%s\n",hash_base64);
+	printfln("hash_base64:%s",hash_base64);
 
-	printf("----------\n");
+	printfln("----------\n");
 	unsigned char decrypt[SECRECY_BUFFER_LONG_LENGTH]={'\0'};
 	size_t decrypt_length=secrecy_aes(AES_DECRYPT,
 			key,
 			encrypt,
 			encrypt_length,
 			decrypt);
-	printf("decrypt:%ld:%s\n",decrypt_length,decrypt);
+	printfln("decrypt:%ld:%s",decrypt_length,decrypt);
 }
 void test_secrecy_get_block_content(){
 	char block[]=
