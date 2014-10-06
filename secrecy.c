@@ -28,6 +28,8 @@
 #define SECRECY_AES_BLOCK_LENGTH 16 ///aes块长度
 #define SECRECY_SHA1_LENGTH 20 ///sha1结果长度
 #define SECRECY_SHA1_BASE64_LENGTH 100 ///sha1 结果转换为base64时的最大长度
+#define SECRECY_TEST_SECRET_KEY "secrecy test key" ///测试用的密钥
+#define SECRECY_TEST_FILE "lipsum.md" ///测试用的加密解密文件
 
 ///把不可见的字符转换成 int 打印出来
 static void print_char_code(unsigned char *str,size_t length){
@@ -436,13 +438,13 @@ void testcodes_to_string(){
 	printf("printable_string:%s\n",printable_string);
 }
 void test_encrypt_file(){
-	unsigned char key[]="key";
-	secrecy_encrypt_file("./README.md","./README.secrecy.md",key);
+	unsigned char key[]=SECRECY_TEST_SECRET_KEY;
+	secrecy_encrypt_file(SECRECY_TEST_FILE,SECRECY_TEST_FILE,key);
 	//secrecy_encrypt_file("./cppp3.md","./cppp3.secrecy.md",key);
 }
 void test_decrypt_file(){
-	unsigned char key[]="key";
-	secrecy_decrypt_file("./README.secrecy.md","./README.decrypt.md",key,1);
+	unsigned char key[]=SECRECY_TEST_SECRET_KEY;
+	secrecy_decrypt_file(SECRECY_TEST_FILE,SECRECY_TEST_FILE,key,1);
 	//secrecy_decrypt_file("./cppp3.secrecy.md","./cppp3.decrypt.md",key,1);
 }
 void secrecy_self_test(){
