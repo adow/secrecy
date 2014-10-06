@@ -18,3 +18,4 @@ output/*
 *.swp
 *.pyc
 secrecy
+*.out

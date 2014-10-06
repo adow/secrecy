@@ -3,6 +3,8 @@
 
 #define LOG_FILE_SIZE_DEFAULT 1000000
 
+///带换行的printf,内容的最大长度是2048
+void printfln(const char *fmt,...);
 ///配置输出调试信息
 void cc_log_config_file(const char *filename,long long log_file_size);
 ///写入log到文件

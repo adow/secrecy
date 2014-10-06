@@ -27,6 +27,16 @@ static FILE *log_file_output;///输出log的文件
 static char log_file_name[PATH_MAX];///输出日志的文件名
 static long long log_file_max_size=LOG_FILE_SIZE_DEFAULT;///文件的最大长度
 static long long log_file_current_size=0;///现在的文件的长度
+
+///带换行的printf,内容的最大长度是2048
+void printfln(const char *fmt,...){
+	va_list ap;
+	va_start(ap,fmt);
+	char buf[LOG_MAX_LINE]={'\0'};
+	vsnprintf(buf,LOG_MAX_LINE-1,fmt,ap);
+	va_end(ap);
+	printf("%s\n",buf);
+}
 ///当前时间
 static char *_debug_time(){
 	static char buf[LOG_DEBUG_INFO_BUF_LENGTH]={'\0'};
@@ -164,10 +174,16 @@ void test_dir_filename(){
 	int total=_dir_file_total(dir);
 	printf("file total:%d\n",total);
 }
+void test_printfln(){
+	int a=123;
+	printfln("test:%d",a);
+	printfln("a test:%p",&a);
+}
 /*
 int main(int arg_c,char *arg_v[]){
 	test_cc_log();
 	//test_dir_filename();
+	test_printfln();
 	return 0;
 }
 */
