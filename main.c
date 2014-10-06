@@ -40,10 +40,14 @@ extern void secrecy_self_test();
 ///输出帮助信息
 void _output_help(){
 	const char *help="SECRECY COMMANDS:\n"
-		"\tsecrecy encrypt -i <inputfile> -o <outputfile> -k <secret> -h <hints> \t#Encrypt a File,-h could be ignored, -k should be less than 256 in length;\n"
-		"\tsecrecy decrypt -i <inputfile> -o <outputfile> -k <secret> \t#Decrypt a file, -k should be less than 256 in length;\n"
-		"\tsecrecy test \t#test encrypt and decrypt lipsum.md;\n"
-		"\tsecrecy help \t#Help;\n";
+		"* secrecy encrypt -i <inputfile> -o <outputfile> -k <secret> -h <hints>\n"
+		"\t Encrypt a File,-h could be ignored, -k should be less than 256 in length;\n"
+		"* secrecy decrypt -i <inputfile> -o <outputfile> -k <secret>\n"
+		"\t Decrypt a file, -k should be less than 256 in length;\n"
+		"* secrecy test\n"
+		"\t Test encrypt and decrypt lipsum.md;\n"
+		"* secrecy help\n"
+		"\t Help;";
 	printf("%s\n",help);
 }
 ///处理参数，执行加密或者解密
