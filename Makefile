@@ -3,6 +3,7 @@ SOURCES = \
 	  lib/polarssl/aes.c \
 	  lib/polarssl/sha1.c \
 	  secrecy.c \
+	  log.c \
 	  main.c
 
 OUTPUT = secrecy
